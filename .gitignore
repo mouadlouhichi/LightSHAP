@@ -15,7 +15,10 @@ build/
 data/raw/
 data/processed/
 data/cache/
-checkpoints/
+# Runtime checkpoint directory at repo root only.
+# Do NOT use a bare "checkpoints/" rule — it would ignore
+# src/lightshap/checkpoints/ (the Python package).
+/checkpoints/
 results/runs/
 *.pt
 *.pth
