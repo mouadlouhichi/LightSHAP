@@ -50,6 +50,8 @@ def run_bpr_grid(
             resume=resume,
             n_negatives=cfg.n_negatives,
             log_every=cfg.log_every,
+            eval_every=cfg.eval_every,
+            checkpoint_every_epoch=cfg.checkpoint_every_epoch,
         )
         results.append(
             {

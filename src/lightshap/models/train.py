@@ -17,7 +17,7 @@ from lightshap.checkpoints.store import (
     validate_training_checkpoint,
 )
 from lightshap.data.bundle import DatasetBundle
-from lightshap.models.negatives import sample_negatives
+from lightshap.models.negatives import build_forbidden_mask, sample_negatives_mask
 from lightshap.scoring.fusion import inner_product_scores
 from lightshap.scoring.mask import mask_rows
 from lightshap.scoring.metrics import summarize_metrics
@@ -104,6 +104,7 @@ def train_bpr_loop(
     n_negatives: int = 1,
     log_every: int = 50,
     eval_every: int = 1,
+    checkpoint_every_epoch: bool = False,
     fail_after_epoch: int | None = None,
 ) -> TrainResult:
     """Train with early stopping on val NDCG@10.
@@ -128,6 +129,13 @@ def train_bpr_loop(
     val_users = torch.tensor(bundle.val["user_idx"].to_numpy(), dtype=torch.long, device=device_t)
     val_items = torch.tensor(bundle.val["item_idx"].to_numpy(), dtype=torch.long, device=device_t)
     seen_val = bundle.val_seen_mask.to(device_t)
+    forbidden = build_forbidden_mask(
+        bundle.n_users,
+        bundle.n_items,
+        train_items,
+        heldout,
+        neg_pool,
+    )
 
     start_epoch = 1
     best_metric = -1.0
@@ -165,13 +173,20 @@ def train_bpr_loop(
     n = len(train_u)
     last_path: str | None = None
 
+    fused_eval: torch.Tensor | None = None
+
     def score_fn(users: torch.Tensor) -> torch.Tensor:
+        nonlocal fused_eval
         if kind == "bpr":
             return _score_bpr(model, users)
-        return _score_lightgcn(model, users)
+        if fused_eval is None:
+            fused_eval = model.fuse_uniform()
+        u = fused_eval[users]
+        items = fused_eval[model.n_users :]
+        return inner_product_scores(u, items)
 
     for epoch in range(start_epoch, max_epochs + 1):
-        # Epoch-keyed RNG so resume samples the same negatives as an uninterrupted run.
+        # Epoch-keyed RNG so resume is deterministic given the sampler.
         rng = np.random.default_rng(seed + epoch * 17)
         model.train()
         perm = rng.permutation(n)
@@ -181,12 +196,9 @@ def train_bpr_loop(
             idx = perm[start : start + batch_size]
             users = torch.tensor(train_u[idx], dtype=torch.long, device=device_t)
             pos = torch.tensor(train_i[idx], dtype=torch.long, device=device_t)
-            neg_np = sample_negatives(
-                train_u[idx].tolist(),
-                n_items=bundle.n_items,
-                train_items=train_items,
-                heldout_items=heldout,
-                neg_pool=neg_pool,
+            neg_np = sample_negatives_mask(
+                train_u[idx],
+                forbidden=forbidden,
                 rng=rng,
                 n_neg=n_negatives,
             )
@@ -211,8 +223,10 @@ def train_bpr_loop(
             "epoch": float(epoch),
             "loss": epoch_loss / max(n_batches, 1),
         }
-        if epoch % eval_every == 0 or epoch == max_epochs:
+        did_eval = epoch % max(eval_every, 1) == 0 or epoch == max_epochs
+        if did_eval:
             model.eval()
+            fused_eval = None
             metrics = evaluate_full_catalog(
                 score_fn, val_users, val_items, seen_val, cutoffs=(10,)
             )
@@ -226,10 +240,14 @@ def train_bpr_loop(
                     k: v.detach().cpu().clone() for k, v in model.state_dict().items()
                 }
             else:
-                patience_counter += 1
+                # patience is counted in epochs since last improvement
+                patience_counter = epoch - best_epoch if best_epoch else epoch
         history.append(record)
 
-        if ckpt is not None:
+        should_ckpt = ckpt is not None and (
+            checkpoint_every_epoch or did_eval or epoch == max_epochs
+        )
+        if should_ckpt:
             payload = training_payload(
                 model_state={k: v.detach().cpu() for k, v in model.state_dict().items()},
                 optimizer_state=opt.state_dict(),

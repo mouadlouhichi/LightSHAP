@@ -92,6 +92,7 @@ class ExperimentConfig:
     num_workers: int
     log_every: int
     checkpoint_every_epoch: bool
+    eval_every: int
     extra: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -314,7 +315,8 @@ def load_experiment_config(
         force=bool(raw.get("force", False)),
         num_workers=int(raw.get("num_workers", 0)),
         log_every=int(raw.get("log_every", 50)),
-        checkpoint_every_epoch=bool(raw.get("checkpoint_every_epoch", True)),
+        checkpoint_every_epoch=bool(raw.get("checkpoint_every_epoch", False)),
+        eval_every=int(raw.get("eval_every", lg_raw.get("eval_every", 1))),
         extra={k: v for k, v in raw.items() if k not in {
             "profile", "run_name", "seeds", "datasets", "device", "neg_pool",
             "cutoff", "cutoffs", "n_negatives", "lightgcn", "bpr_max_epochs",
@@ -322,7 +324,7 @@ def load_experiment_config(
             "game_b_margin", "adaptive_beta", "beauty_user_floor",
             "retrained_k", "n_val_alpha", "run_bpr_grid", "run_retrained_k",
             "run_game_b_if_triggered", "allow_missing_sha256", "force",
-            "num_workers", "log_every", "checkpoint_every_epoch",
+            "num_workers", "log_every", "checkpoint_every_epoch", "eval_every",
         }},
     )
     validate_frozen(cfg)

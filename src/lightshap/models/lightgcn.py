@@ -30,10 +30,24 @@ class LightGCN(nn.Module):
         if hat_a.is_sparse:
             hat_a = hat_a.coalesce()
         self.register_buffer("hat_a", hat_a)
+        # Not a buffer: must not land in checkpoints. Built once per device.
+        self._hat_dense: torch.Tensor | None = None
 
-    def _matmul(self, hat: torch.Tensor, e: torch.Tensor) -> torch.Tensor:
-        if e.device.type == "mps" and hat.is_sparse:
-            hat = hat.to_dense()
+    def _dense_hat(self) -> torch.Tensor:
+        hat = self.hat_a
+        if not hat.is_sparse:
+            return hat
+        # MPS sparse.mm is incomplete; ML-1M/Beauty dense hat_A fits in 16+ GB.
+        if hat.device.type == "mps":
+            cached = self._hat_dense
+            if cached is None or cached.device != hat.device:
+                self._hat_dense = hat.to_dense()
+            assert self._hat_dense is not None
+            return self._hat_dense
+        return hat
+
+    def _matmul(self, e: torch.Tensor) -> torch.Tensor:
+        hat = self._dense_hat()
         if hat.is_sparse:
             return torch.sparse.mm(hat, e)
         return hat @ e
@@ -42,9 +56,8 @@ class LightGCN(nn.Module):
         e0 = self.embedding.weight
         layers = [e0]
         e = e0
-        hat = self.hat_a
         for _ in range(self.K):
-            e = self._matmul(hat, e)
+            e = self._matmul(e)
             layers.append(e)
         return layers
 

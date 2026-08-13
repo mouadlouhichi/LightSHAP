@@ -52,8 +52,15 @@ python scripts/fetch_data.py
 # paste the printed SHA256s into configs/ml1m.yaml and configs/beauty.yaml
 ```
 
-Then open `notebooks/run_all.ipynb`, set `PROFILE = "synthetic"` for a smoke
-run, or `PROFILE = "experiment"` for the scientific ML-1M + Beauty pipeline.
+Then open `notebooks/run_all.ipynb`.
+
+Recommended scientific order (see `docs/compute_budget.md`):
+
+1. `PROFILE = "experiment_core"` — frozen LightGCN + exact Game A (the estimand).
+2. `PROFILE = "experiment"` — BPR 6-grid + retrained K controls.
+
+Evaluating every epoch is **not** a freeze. Default is `eval_every: 5`,
+patience still 20 epochs. Shapley stays exact (8 coalitions, no Monte Carlo).
 
 ## CLI
 

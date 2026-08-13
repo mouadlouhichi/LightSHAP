@@ -55,7 +55,8 @@ def train_lightgcn_k(
         software=software,
         resume=resume,
         n_negatives=cfg.n_negatives,
-        eval_every=cfg.lightgcn.eval_every,
+        eval_every=cfg.eval_every,
+        checkpoint_every_epoch=cfg.checkpoint_every_epoch,
         fail_after_epoch=fail_after_epoch,
     )
     # reload best and cache layers
