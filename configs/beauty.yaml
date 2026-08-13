@@ -5,6 +5,7 @@ filename: reviews_Beauty_5.json.gz
 year: 2014
 # Paste the SHA256 of the downloaded gz BEFORE the scientific tag.
 # Also mirror the bytes on OSF/Zenodo next to the pre-reg.
-sha256: ""
+# Amazon Beauty 2014 5-core reviews_Beauty_5.json.gz (configured SNAP URL).
+sha256: "e5925ec99023f1dc9c7d3dff7ef34cfeacd40d1b981b5525e1e4ba9c8abc18fe"
 implicit_threshold: null
 batch_size: 1024

@@ -256,20 +256,34 @@ class PipelineRunner:
 
     def stage_data_download(self, **_: Any) -> dict[str, Any]:
         raw_dir = ensure_dir(self.cfg.project_root / "data" / "raw")
-        recs = {}
+        recs: dict[str, Any] = {}
+        errors: dict[str, str] = {}
         for name in self.cfg.datasets:
             dcfg = load_dataset_yaml(name, self.cfg.project_root)
+            yaml_path = self.cfg.project_root / "configs" / f"{name}.yaml"
             try:
-                recs[name] = ensure_raw_dataset(
-                    dcfg, raw_dir, allow_missing_sha256=self.cfg.allow_missing_sha256
+                rec = ensure_raw_dataset(
+                    dcfg,
+                    raw_dir,
+                    allow_missing_sha256=self.cfg.allow_missing_sha256,
+                    yaml_path=yaml_path if yaml_path.is_file() else None,
                 )
+                recs[name] = rec
+                if rec.get("recorded_first_seen"):
+                    self.warn(
+                        f"{name}: empty sha256 locked to first-seen digest {rec.get('sha256')}"
+                    )
             except Exception as exc:
-                if name == "synthetic":
-                    recs[name] = {"skipped": True}
-                elif self.cfg.profile == "synthetic":
-                    recs[name] = {"error": str(exc), "skipped": True}
+                if name == "synthetic" or self.cfg.profile == "synthetic":
+                    recs[name] = {"skipped": True, "error": str(exc)}
                 else:
-                    raise
+                    errors[name] = f"{type(exc).__name__}: {exc}"
+                    recs[name] = {"error": str(exc), "verified": False}
+        if errors:
+            raise StageError(
+                "dataset download/hash failed for: "
+                + "; ".join(f"{k}: {v}" for k, v in errors.items())
+            )
         if self.cfg.profile == "scientific":
             missing = [
                 n

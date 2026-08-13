@@ -10,7 +10,6 @@ Does NOT start the science run. Spec: paste hashes before the signed tag.
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from pathlib import Path
 
@@ -18,17 +17,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from lightshap.config import load_dataset_yaml  # noqa: E402
-from lightshap.data.download import download_file  # noqa: E402
+from lightshap.data.download import download_file, write_sha256_yaml  # noqa: E402
 from lightshap.utils.hashing import sha256_file  # noqa: E402
 
 
 def write_sha256(yaml_path: Path, digest: str) -> None:
-    text = yaml_path.read_text(encoding="utf-8")
-    if re.search(r"^sha256:\s*", text, flags=re.M):
-        text = re.sub(r'^sha256:\s*.*$', f'sha256: "{digest}"', text, count=1, flags=re.M)
-    else:
-        text = text.rstrip() + f'\nsha256: "{digest}"\n'
-    yaml_path.write_text(text, encoding="utf-8")
+    write_sha256_yaml(yaml_path, digest)
 
 
 def main(argv: list[str] | None = None) -> int:
