@@ -12,7 +12,7 @@ from lightshap.utils.io import atomic_write_json, ensure_dir
 from lightshap.utils.provenance import utc_now
 
 
-def download_file(url: str, dest: Path, *, timeout: int = 120) -> Path:
+def download_file(url: str, dest: Path, *, timeout: int = 300) -> Path:
     ensure_dir(dest.parent)
     if dest.is_file() and dest.stat().st_size > 0:
         return dest
@@ -42,8 +42,12 @@ def verify_sha256(path: Path, expected: str | None, *, allow_missing: bool) -> s
     elif not allow_missing:
         raise DataIntegrityError(
             f"expected SHA256 is empty for {path.name}. "
-            "Paste the hash into the dataset yaml before a scientific run. "
-            f"Computed digest={digest}"
+            "This is not a bug in the download — the scientific profile "
+            "refuses to start until the hash is pasted. "
+            f"Computed digest={digest}. "
+            "On Kaggle, run: python scripts/fetch_data.py --write-yaml "
+            "then resume. Or set sha256 in configs/<dataset>.yaml to:\n"
+            f'  sha256: "{digest}"'
         )
     return digest
 
@@ -64,7 +68,7 @@ def ensure_raw_dataset(
             "reason": "synthetic",
         }
     dest = raw_dir / cfg.filename
-    download_file(cfg.url, dest)
+    download_file(cfg.url, dest, timeout=600)
     digest = verify_sha256(dest, cfg.expected_sha256, allow_missing=allow_missing_sha256)
     rec = {
         "name": cfg.name,

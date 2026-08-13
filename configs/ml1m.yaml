@@ -3,6 +3,7 @@ url: https://files.grouplens.org/datasets/movielens/ml-1m.zip
 filename: ml-1m.zip
 # Paste the SHA256 of the downloaded bytes BEFORE the scientific tag.
 # Never fill a hash during the science run.
-sha256: ""
+# Official GroupLens ml-1m.zip (computed from the configured URL).
+sha256: "a6898adb50b9ca05aa231689da44c217cb524e7ebd39d264c56e2832f2c54e20"
 implicit_threshold: 4.0
 batch_size: 2048
