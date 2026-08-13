@@ -1,0 +1,316 @@
+{
+  "ADAPT.BETA": {
+    "evidence": null,
+    "id": "ADAPT.BETA",
+    "name": "beta=1/4, no beta_m in RQ4",
+    "section": "A.10",
+    "status": "NOT_EXECUTED"
+  },
+  "ADAPT.FLOOR": {
+    "evidence": null,
+    "id": "ADAPT.FLOOR",
+    "name": "adaptive E0-only if v_m<0.005",
+    "section": "A.10",
+    "status": "NOT_EXECUTED"
+  },
+  "BEAUTY.2014": {
+    "evidence": 2014,
+    "id": "BEAUTY.2014",
+    "name": "Amazon Beauty 2014 5-core",
+    "section": "A.3",
+    "status": "PASS"
+  },
+  "BEAUTY.FLOOR": {
+    "evidence": null,
+    "id": "BEAUTY.FLOOR",
+    "name": "|U|<1000 exploratory; RQ3 confirmatory=ML-1M",
+    "section": "A.3",
+    "status": "NOT_EXECUTED"
+  },
+  "BPR.GRID6": {
+    "evidence": [
+      {
+        "d": 32,
+        "lr": 0.001,
+        "reg": 0.0001
+      },
+      {
+        "d": 64,
+        "lr": 0.001,
+        "reg": 0.0001
+      },
+      {
+        "d": 128,
+        "lr": 0.001,
+        "reg": 0.0001
+      },
+      {
+        "d": 32,
+        "lr": 0.0005,
+        "reg": 0.0001
+      },
+      {
+        "d": 64,
+        "lr": 0.0005,
+        "reg": 0.0001
+      },
+      {
+        "d": 128,
+        "lr": 0.0005,
+        "reg": 0.0001
+      }
+    ],
+    "id": "BPR.GRID6",
+    "name": "exactly 6 listed BPR tuples",
+    "section": "A.5",
+    "status": "PASS"
+  },
+  "BPR.NEG_TOGGLE": {
+    "evidence": [
+      "heldout_excluded",
+      "train_only"
+    ],
+    "id": "BPR.NEG_TOGGLE",
+    "name": "--neg-pool heldout_excluded|train_only",
+    "section": "A.5",
+    "status": "PASS"
+  },
+  "COSINE.FULL": {
+    "evidence": null,
+    "id": "COSINE.FULL",
+    "name": "cosine: full side, row-norm, flattened, no subsample",
+    "section": "A.11",
+    "status": "NOT_EXECUTED"
+  },
+  "DATA.SHA": {
+    "evidence": "synthetic",
+    "id": "DATA.SHA",
+    "name": "SHA256 + mirror before scientific tag",
+    "section": "A.0",
+    "status": "NOT_APPLICABLE"
+  },
+  "FIX.I": {
+    "evidence": {
+      "12": 0.5,
+      "13": 0.5,
+      "23": 0.5
+    },
+    "id": "FIX.I",
+    "name": "fixture I_ij = 1/2",
+    "section": "A.0/A.8",
+    "status": "PASS"
+  },
+  "FIX.I12_NOT_1": {
+    "evidence": "I12=0.5",
+    "id": "FIX.I12_NOT_1",
+    "name": "I_12 = 1 is rejected",
+    "section": "A.0",
+    "status": "PASS"
+  },
+  "FIX.PHI": {
+    "evidence": {
+      "1": 1.6666666666666667,
+      "2": 2.6666666666666665,
+      "3": 3.6666666666666665
+    },
+    "id": "FIX.PHI",
+    "name": "fixture phi = (5/3, 8/3, 11/3)",
+    "section": "A.0/A.8",
+    "status": "PASS"
+  },
+  "FIX.PROP2": {
+    "evidence": [
+      "prop2_12",
+      "prop2_23"
+    ],
+    "id": "FIX.PROP2",
+    "name": "both Prop. 2 gadgets",
+    "section": "A.0",
+    "status": "PASS"
+  },
+  "FLAG.CLAUSES": {
+    "evidence": null,
+    "id": "FLAG.CLAUSES",
+    "name": "I<0 and three 0.15 relative clauses",
+    "section": "A.11",
+    "status": "NOT_EXECUTED"
+  },
+  "FLAG.FLOOR": {
+    "evidence": null,
+    "id": "FLAG.FLOOR",
+    "name": "flag UNDEFINED if v(L)<0.005",
+    "section": "A.11",
+    "status": "NOT_EXECUTED"
+  },
+  "FLAG.NOT_PRUNE": {
+    "evidence": null,
+    "id": "FLAG.NOT_PRUNE",
+    "name": "flag is not a prune claim",
+    "section": "A.11",
+    "status": "NOT_EXECUTED"
+  },
+  "GAMEA.3P": {
+    "evidence": [
+      1,
+      2,
+      3
+    ],
+    "id": "GAMEA.3P",
+    "name": "Game A players {1,2,3}, E0 always on, 8 coalitions",
+    "section": "frozen",
+    "status": "PASS"
+  },
+  "GAMEA.MODEA": {
+    "evidence": null,
+    "id": "GAMEA.MODEA",
+    "name": "Mode A mask-and-mean",
+    "section": "frozen",
+    "status": "NOT_EXECUTED"
+  },
+  "GAMEB.TRIGGER": {
+    "evidence": null,
+    "id": "GAMEB.TRIGGER",
+    "name": "Game B strict unique-max + 0.05 same-side",
+    "section": "A.11",
+    "status": "NOT_EXECUTED"
+  },
+  "LGCN.K3D64": {
+    "evidence": "synthetic profile",
+    "id": "LGCN.K3D64",
+    "name": "LightGCN K=3 d=64 lr=1e-3 reg=1e-4 patience=20",
+    "section": "frozen",
+    "status": "NOT_APPLICABLE"
+  },
+  "NO_CORR_N3": {
+    "evidence": null,
+    "id": "NO_CORR_N3",
+    "name": "flag sub-conditions: co-occurrence, not r",
+    "section": "3.4",
+    "status": "NOT_EXECUTED"
+  },
+  "Q.ONCE": {
+    "evidence": {
+      "synthetic": {
+        "q25": 6.0,
+        "q50": 6.0,
+        "q75": 7.0
+      }
+    },
+    "id": "Q.ONCE",
+    "name": "quartile cuts once from train degrees",
+    "section": "frozen",
+    "status": "PASS"
+  },
+  "RANK.LEX": {
+    "evidence": null,
+    "id": "RANK.LEX",
+    "name": "lex Top-K score desc, item_id asc, no jitter",
+    "section": "A.6",
+    "status": "NOT_EXECUTED"
+  },
+  "RESUME": {
+    "evidence": null,
+    "id": "RESUME",
+    "name": "stage/seed/epoch resume",
+    "section": "infra",
+    "status": "NOT_EXECUTED"
+  },
+  "RQ1.NO_SPEARMAN_PHI": {
+    "evidence": null,
+    "id": "RQ1.NO_SPEARMAN_PHI",
+    "name": "no Spearman on phi",
+    "section": "RQ1",
+    "status": "NOT_EXECUTED"
+  },
+  "RQ1.SPEARMAN_V": {
+    "evidence": null,
+    "id": "RQ1.SPEARMAN_V",
+    "name": "Spearman on 8-vector v(C), average ranks",
+    "section": "RQ1",
+    "status": "NOT_EXECUTED"
+  },
+  "RQ2.RETRAIN_K": {
+    "evidence": null,
+    "id": "RQ2.RETRAIN_K",
+    "name": "retrained K=1..4 in RQ2",
+    "section": "RQ2",
+    "status": "NOT_EXECUTED"
+  },
+  "RQ3.DELTA": {
+    "evidence": null,
+    "id": "RQ3.DELTA",
+    "name": "\u0394 only if both groups v_m>=0.005",
+    "section": "RQ3",
+    "status": "NOT_EXECUTED"
+  },
+  "RQ3.NEG_D": {
+    "evidence": null,
+    "id": "RQ3.NEG_D",
+    "name": "negative D_m = deep hops hurt",
+    "section": "RQ3",
+    "status": "NOT_EXECUTED"
+  },
+  "RQ4.HOLM": {
+    "evidence": null,
+    "id": "RQ4.HOLM",
+    "name": "Holm within dataset, 3 tests, no pooling",
+    "section": "RQ4",
+    "status": "NOT_EXECUTED"
+  },
+  "RQ4.WILCOXON": {
+    "evidence": null,
+    "id": "RQ4.WILCOXON",
+    "name": "two-sided Wilcoxon",
+    "section": "RQ4",
+    "status": "NOT_EXECUTED"
+  },
+  "SCORE.GEMM": {
+    "evidence": null,
+    "id": "SCORE.GEMM",
+    "name": "GEMM + dense mask + item I-1",
+    "section": "A.6",
+    "status": "NOT_EXECUTED"
+  },
+  "SEEDS.5": {
+    "evidence": "synthetic profile",
+    "id": "SEEDS.5",
+    "name": "five scientific seeds",
+    "section": "frozen",
+    "status": "NOT_APPLICABLE"
+  },
+  "STAT.NOT_5U": {
+    "evidence": null,
+    "id": "STAT.NOT_5U",
+    "name": "never treat 5|U| as iid",
+    "section": "frozen",
+    "status": "NOT_EXECUTED"
+  },
+  "STAT.USER": {
+    "evidence": null,
+    "id": "STAT.USER",
+    "name": "average users across seeds then bootstrap users",
+    "section": "frozen",
+    "status": "NOT_EXECUTED"
+  },
+  "V.VAL": {
+    "evidence": null,
+    "id": "V.VAL",
+    "name": "v = val NDCG@10 uplift over E0",
+    "section": "frozen",
+    "status": "NOT_EXECUTED"
+  },
+  "VALALPHA.286": {
+    "evidence": 286,
+    "id": "VALALPHA.286",
+    "name": "exactly 286 val-alpha candidates",
+    "section": "A.12",
+    "status": "PASS"
+  },
+  "VALALPHA.TIE": {
+    "evidence": null,
+    "id": "VALALPHA.TIE",
+    "name": "tie: closest to uniform then lex",
+    "section": "A.12",
+    "status": "NOT_EXECUTED"
+  }
+}

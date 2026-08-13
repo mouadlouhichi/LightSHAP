@@ -1,0 +1,10 @@
+name: beauty
+# Amazon Beauty 2014 5-core. Never "2018 All-Beauty".
+url: http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/reviews_Beauty_5.json.gz
+filename: reviews_Beauty_5.json.gz
+year: 2014
+# Paste the SHA256 of the downloaded gz BEFORE the scientific tag.
+# Also mirror the bytes on OSF/Zenodo next to the pre-reg.
+sha256: ""
+implicit_threshold: null
+batch_size: 1024

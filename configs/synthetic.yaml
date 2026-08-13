@@ -1,0 +1,33 @@
+# Tiny deterministic profile for tests / smoke. NOT a scientific run.
+profile: synthetic
+run_name: synthetic
+seeds: [0, 1]
+datasets: [synthetic]
+device: auto
+neg_pool: heldout_excluded
+cutoff: 10
+cutoffs: [5, 10, 20]
+n_negatives: 1
+lightgcn:
+  K: 3
+  d: 8
+  lr: 1.0e-2
+  reg: 1.0e-4
+  patience: 3
+  max_epochs: 6
+  eval_every: 1
+bpr_max_epochs: 4
+bpr_patience: 2
+stability_floor: 0.005
+flag_relative_tol: 0.15
+game_b_margin: 0.05
+adaptive_beta: 0.25
+beauty_user_floor: 1000
+retrained_k: [1, 2, 3, 4]
+n_val_alpha: 286
+run_bpr_grid: true
+run_retrained_k: true
+run_game_b_if_triggered: true
+allow_missing_sha256: true
+checkpoint_every_epoch: true
+batch_size: 64

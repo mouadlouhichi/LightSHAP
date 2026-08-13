@@ -1,0 +1,8 @@
+name: ml1m
+url: https://files.grouplens.org/datasets/movielens/ml-1m.zip
+filename: ml-1m.zip
+# Paste the SHA256 of the downloaded bytes BEFORE the scientific tag.
+# Never fill a hash during the science run.
+sha256: ""
+implicit_threshold: 4.0
+batch_size: 2048

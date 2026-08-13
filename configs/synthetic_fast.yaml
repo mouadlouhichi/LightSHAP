@@ -1,0 +1,33 @@
+# Even smaller: skip BPR grid + retrained K. Used by resume/failure tests.
+profile: synthetic
+run_name: synthetic_fast
+seeds: [0]
+datasets: [synthetic]
+device: cpu
+neg_pool: heldout_excluded
+cutoff: 10
+cutoffs: [10]
+n_negatives: 1
+lightgcn:
+  K: 3
+  d: 8
+  lr: 1.0e-2
+  reg: 1.0e-4
+  patience: 2
+  max_epochs: 3
+  eval_every: 1
+bpr_max_epochs: 2
+bpr_patience: 1
+stability_floor: 0.005
+flag_relative_tol: 0.15
+game_b_margin: 0.05
+adaptive_beta: 0.25
+beauty_user_floor: 1000
+retrained_k: [1, 2, 3, 4]
+n_val_alpha: 286
+run_bpr_grid: false
+run_retrained_k: false
+run_game_b_if_triggered: true
+allow_missing_sha256: true
+checkpoint_every_epoch: true
+batch_size: 64

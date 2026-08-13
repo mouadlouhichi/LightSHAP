@@ -1,0 +1,10 @@
+# 6 configurations. Selected by val NDCG@10. Locked before any LightGCN φ is interpreted.
+# batch: 2048 on ML-1M, 1024 on Beauty (dataset scale, not a search dimension).
+# patience: 20. epochs max: 1000.
+grid:
+  - {d: 32,  lr: 1.0e-3, reg: 1.0e-4}
+  - {d: 64,  lr: 1.0e-3, reg: 1.0e-4}
+  - {d: 128, lr: 1.0e-3, reg: 1.0e-4}
+  - {d: 32,  lr: 5.0e-4, reg: 1.0e-4}
+  - {d: 64,  lr: 5.0e-4, reg: 1.0e-4}
+  - {d: 128, lr: 5.0e-4, reg: 1.0e-4}

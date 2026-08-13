@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lightshap"
+version = "0.1.0"
+description = "LightShap: attribution of inference-time hop inclusion in a frozen LightGCN fusion"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "Mouad Louhichi" },
+  { name = "Redwane Nesmaoui" },
+  { name = "Mohamed Lazaar" },
+]
+license = { text = "MIT" }
+dependencies = [
+  "numpy>=1.26,<2.3",
+  "scipy>=1.11",
+  "pandas>=2.1",
+  "scikit-learn>=1.4",
+  "torch>=2.2",
+  "pyyaml>=6.0",
+  "tqdm>=4.66",
+  "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "types-pyyaml",
+  "nbformat>=5.10",
+  "nbclient>=0.10",
+  "ipython>=8.0",
+]
+
+[project.scripts]
+lightshap = "lightshap.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q --strict-markers"
+markers = [
+  "unit: fast unit tests",
+  "integration: synthetic integration tests",
+  "regression: frozen scientific invariants",
+  "resume: checkpoint/resume tests",
+  "slow: longer tests",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_unused_ignores = true
+check_untyped_defs = true
+mypy_path = "src"

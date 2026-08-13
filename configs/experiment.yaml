@@ -1,0 +1,32 @@
+# Scientific profile. Frozen LightGCN. Five seeds. Real datasets.
+profile: scientific
+run_name: scientific
+seeds: [0, 1, 2, 3, 4]
+datasets: [ml1m, beauty]
+device: auto  # mps on Apple Silicon, else cuda, else cpu
+neg_pool: heldout_excluded
+cutoff: 10
+cutoffs: [5, 10, 20]
+n_negatives: 1
+lightgcn:
+  K: 3
+  d: 64
+  lr: 1.0e-3
+  reg: 1.0e-4
+  patience: 20
+  max_epochs: 1000
+  eval_every: 1
+bpr_max_epochs: 1000
+bpr_patience: 20
+stability_floor: 0.005
+flag_relative_tol: 0.15
+game_b_margin: 0.05
+adaptive_beta: 0.25
+beauty_user_floor: 1000
+retrained_k: [1, 2, 3, 4]
+n_val_alpha: 286
+run_bpr_grid: true
+run_retrained_k: true
+run_game_b_if_triggered: true
+allow_missing_sha256: false
+checkpoint_every_epoch: true
