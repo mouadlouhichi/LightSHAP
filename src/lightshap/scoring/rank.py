@@ -2,8 +2,14 @@
 
 from __future__ import annotations
 
+import logging
+import time
+from typing import Optional
+
 import numpy as np
 import torch
+
+logger = logging.getLogger(__name__)
 
 
 def lexsort_topk(
@@ -19,6 +25,8 @@ def lexsort_topk(
 
         order = torch.lexsort(torch.stack((item_ids.expand_as(scores), -scores), 0), dim=-1)
     """
+    logger.debug(f"lexsort_topk: scores={scores.shape}, k={k}, item_ids={'provided' if item_ids is not None else 'None'}")
+    
     if scores.dtype != torch.float32:
         scores = scores.to(torch.float32)
     n_items = scores.shape[-1]
@@ -66,15 +74,108 @@ def ranks_of_targets(
 
     ``scores`` (B, I), ``targets`` (B,) item indices in [0, I).
     """
+    start_time = time.perf_counter()
+    batch_size, n_items = scores.shape[-2], scores.shape[-1]
+    
+    logger.info(
+        f"ranks_of_targets START: scores={scores.shape}, targets={targets.shape}, "
+        f"batch={batch_size}, items={n_items}"
+    )
+    
+    # Step 1: Full sort
+    t0 = time.perf_counter()
     order = lexsort_full(scores, item_ids)
-    # position of target in each row
+    logger.info(f"ranks_of_targets: lexsort_full took {time.perf_counter() - t0:.3f}s")
+    
+    # Step 2: Find target positions
+    t0 = time.perf_counter()
     matches = order == targets.unsqueeze(1)
-    # every row must contain the target exactly once if it was not masked out
+    logger.info(f"ranks_of_targets: match comparison took {time.perf_counter() - t0:.3f}s")
+    
+    # Step 3: argmax
+    t0 = time.perf_counter()
     pos = matches.float().argmax(dim=1)
+    logger.info(f"ranks_of_targets: argmax took {time.perf_counter() - t0:.3f}s")
+    
+    # Step 4: Compute hit mask
     hit = matches.any(dim=1)
     ranks = pos + 1
-    ranks = torch.where(hit, ranks, torch.full_like(ranks, scores.shape[-1] + 1))
+    ranks = torch.where(hit, ranks, torch.full_like(ranks, n_items + 1))
+    
+    hit_count = hit.sum().item()
+    miss_count = len(hit) - hit_count
+    
+    logger.info(
+        f"ranks_of_targets DONE: hit={hit_count}/{len(hit)}, "
+        f"rank_range=[{ranks.min().item():.0f}, {ranks.max().item():.0f}], "
+        f"total_time={time.perf_counter() - start_time:.3f}s"
+    )
+    if miss_count > 0:
+        logger.warning(
+            f"ranks_of_targets: {miss_count}/{len(hit)} targets not found in scores"
+        )
+    
     return ranks
+
+
+def ranks_of_targets_batch(
+    scores: torch.Tensor,
+    targets: torch.Tensor,
+    item_ids: torch.Tensor | None = None,
+    batch_size: int = 1024,
+) -> torch.Tensor:
+    """Batch-optimized version of ranks_of_targets for large tensors.
+    
+    Processes users in batches to avoid memory issues with large item counts.
+    """
+    start_time = time.perf_counter()
+    n_users, n_items = scores.shape[-2], scores.shape[-1]
+    
+    logger.info(
+        f"ranks_of_targets_batch START: scores={scores.shape}, targets={targets.shape}, "
+        f"n_users={n_users}, n_items={n_items}, batch_size={batch_size}"
+    )
+    
+    # Flatten if extra dims
+    original_shape = scores.shape
+    scores = scores.reshape(-1, n_items)
+    targets = targets.reshape(-1)
+    
+    n_batches = (len(scores) + batch_size - 1) // batch_size
+    all_ranks = []
+    
+    for i in range(0, len(scores), batch_size):
+        batch_idx = i // batch_size
+        t0 = time.perf_counter()
+        
+        batch_scores = scores[i:i+batch_size]
+        batch_targets = targets[i:i+batch_size]
+        
+        # Compute ranks for batch
+        order = lexsort_full(batch_scores, item_ids)
+        matches = order == batch_targets.unsqueeze(1)
+        pos = matches.float().argmax(dim=1)
+        hit = matches.any(dim=1)
+        ranks = pos + 1
+        ranks = torch.where(hit, ranks, torch.full_like(ranks, n_items + 1))
+        
+        all_ranks.append(ranks)
+        
+        elapsed = time.perf_counter() - t0
+        logger.info(
+            f"ranks_of_targets_batch: batch {batch_idx+1}/{n_batches} "
+            f"({i+len(batch_scores)}/{len(scores)}) took {elapsed:.3f}s"
+        )
+    
+    result = torch.cat(all_ranks, dim=0)
+    if len(original_shape) > 2:
+        result = result.reshape(original_shape[:-2] + (-1,))
+    
+    logger.info(
+        f"ranks_of_targets_batch DONE: total_time={time.perf_counter() - start_time:.3f}s"
+    )
+    
+    return result
 
 
 def numpy_lexsort_topk(
